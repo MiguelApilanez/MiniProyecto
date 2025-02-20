@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class TrapController : MonoBehaviour
 {
-    public int damage = 10;
     public float damageInterval = 1f;
     public LayerMask playerLayer;
 
     private Coroutine damageCoroutine;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (((1 << other.gameObject.layer) & playerLayer) != 0)
@@ -19,6 +19,7 @@ public class TrapController : MonoBehaviour
             }
         }
     }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         if (((1 << other.gameObject.layer) & playerLayer) != 0)
@@ -30,12 +31,18 @@ public class TrapController : MonoBehaviour
             }
         }
     }
+
     private IEnumerator ApplyDamageOverTime(GameObject player)
     {
-        while (true)
+        PlayerController playerController = player.GetComponent<PlayerController>();
+
+        while (playerController != null && playerController.currentHealth > 0)
         {
-            Debug.Log("El jugador ha recibido " + damage + " de daño de la trampa.");
+            playerController.TakeDamage(1);
+            //Debug.Log("El jugador ha perdido 1 corazón por la trampa.");
             yield return new WaitForSeconds(damageInterval);
         }
+
+        damageCoroutine = null;
     }
 }

@@ -11,6 +11,7 @@ public class GranadeEnemyController : MonoBehaviour
     public int explosionDamage = 50;
     public LayerMask playerLayer;
     public Transform[] patrolPoints;
+    public int dañoJugador = 4;
 
     private int currentPatrolIndex = 0;
     private Transform player;
@@ -62,7 +63,17 @@ public class GranadeEnemyController : MonoBehaviour
     }
     void Explode()
     {
-        Debug.Log("El jugador ha recibido " + explosionDamage + " de daño por la explosión del enemigo.");
+        Collider2D detectedPlayer = Physics2D.OverlapCircle(transform.position, explosionRange, playerLayer);
+        if (detectedPlayer != null)
+        {
+            PlayerController playerController = detectedPlayer.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.TakeDamage(dañoJugador);
+            }
+        }
+
+        Debug.Log("El jugador ha perdido 2 corazones por la explosión del enemigo.");
         Destroy(gameObject);
     }
     void OnDrawGizmosSelected()

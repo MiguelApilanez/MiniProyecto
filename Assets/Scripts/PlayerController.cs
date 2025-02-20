@@ -10,9 +10,11 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     public float moveSpeed = 5f;
     public float jumpForce = 10f;
-    public int currentHealth;
     public bool isDeath = false;
-    public int health = 4;
+
+    [Header("PlayerHealth")]
+    public int maxHealth = 4;
+    public int currentHealth;
     public GameObject[] lifeBar;
 
     [Header("GroundConfiguración")]
@@ -45,15 +47,43 @@ public class PlayerController : MonoBehaviour
     }
     public void TakeDamage(int damage)
     {
-        health -= damage;
-        if (health <= 0)
+        currentHealth -= damage;
+        if (currentHealth <= 0)
         {
+            currentHealth = 0;
+            isDeath = true;
             Die();
         }
+        UpdateLifeBar();
     }
 
+    public void Heal(int amount)
+    {
+        currentHealth += amount;
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        UpdateLifeBar();
+    }
+    void UpdateLifeBar()
+    {
+        for (int i = 0; i < lifeBar.Length; i++)
+        {
+            lifeBar[i].SetActive(i < currentHealth);
+        }
+    }
     void Die()
     {
-        Debug.Log("Player has died");
+        isDeath = true;
+        Debug.Log("El jugador ha muerto. Cargando escena en 2 segundos...");
+        enabled = false;
+        StartCoroutine(DieAfterDelay(2f));
+    }
+
+    IEnumerator DieAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene("GameOverScene");
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
+using UnityEngine.SceneManagement;
 
 public class PinaController : MonoBehaviour
 {
@@ -21,7 +22,6 @@ public class PinaController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.isKinematic = true;
     }
-
     void Update()
     {
         DetectPlayer();
@@ -41,7 +41,6 @@ public class PinaController : MonoBehaviour
             }
         }
     }
-
     void StartFall()
     {
         isFalling = true;
@@ -51,9 +50,13 @@ public class PinaController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        if (((1 << collision.gameObject.layer) & playerLayer) != 0)
         {
-            Destroy(collision.gameObject);
+            PlayerController playerController = collision.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.TakeDamage(10);
+            }
         }
     }
 
@@ -66,7 +69,6 @@ public class PinaController : MonoBehaviour
             Invoke(nameof(ReturnToStart), 1f);
         }
     }
-
     void ReturnToStart()
     {
         isReturning = true;
@@ -79,11 +81,9 @@ public class PinaController : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, startPosition.position, returnSpeed * Time.deltaTime);
             yield return null;
         }
-
         isReturning = false;
         isFalling = false;
     }
-
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

@@ -32,6 +32,12 @@ public class ProyectilController : MonoBehaviour
     {
         if (((1 << other.gameObject.layer) & playerLayer) != 0)
         {
+            PlayerController playerController = other.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.TakeDamage(1);
+                //Debug.Log("El jugador ha perdido 1 corazón por impacto de bala.");
+            }
             Destroy(gameObject);
         }
     }
