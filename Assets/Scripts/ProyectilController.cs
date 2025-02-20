@@ -8,7 +8,12 @@ public class ProyectilController : MonoBehaviour
     public LayerMask playerLayer;
     private Vector2 targetDirection;
     private float speed;
+    public float destroyBullet = 2.5f;
 
+    void Start()
+    {
+        Destroy(gameObject, destroyBullet);
+    }
     public void SetShooter(EnemyBulletsController shooter)
     {
         this.shooter = shooter;
