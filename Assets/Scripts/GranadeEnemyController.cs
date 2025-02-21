@@ -14,9 +14,8 @@ public class GranadeEnemyController : MonoBehaviour
     public int dañoJugador = 4;
 
     private int currentPatrolIndex = 0;
-    private Transform player;
+    private PlayerController playerController;
     private bool chasing = false;
-
     void Update()
     {
         DetectPlayer();
@@ -34,8 +33,8 @@ public class GranadeEnemyController : MonoBehaviour
         Collider2D detectedPlayer = Physics2D.OverlapCircle(transform.position, detectionRange, playerLayer);
         if (detectedPlayer != null)
         {
-            player = detectedPlayer.transform;
-            chasing = true;
+            playerController = detectedPlayer.GetComponent<PlayerController>();
+            chasing = (playerController != null);
         }
     }
     void Patrol()
@@ -52,25 +51,20 @@ public class GranadeEnemyController : MonoBehaviour
     }
     void ChasePlayer()
     {
-        if (player == null) return;
+        if (playerController == null || playerController.projectileTarget == null) return;
 
-        transform.position = Vector2.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, playerController.projectileTarget.position, chaseSpeed * Time.deltaTime);
 
-        if (Vector2.Distance(transform.position, player.position) <= explosionRange)
+        if (Vector2.Distance(transform.position, playerController.projectileTarget.position) <= explosionRange)
         {
             Explode();
         }
     }
     void Explode()
     {
-        Collider2D detectedPlayer = Physics2D.OverlapCircle(transform.position, explosionRange, playerLayer);
-        if (detectedPlayer != null)
+        if (playerController != null)
         {
-            PlayerController playerController = detectedPlayer.GetComponent<PlayerController>();
-            if (playerController != null)
-            {
-                playerController.TakeDamage(dañoJugador);
-            }
+            playerController.TakeDamage(dañoJugador);
         }
 
         Debug.Log("El jugador ha perdido 2 corazones por la explosión del enemigo.");

@@ -23,8 +23,13 @@ public class EnemyBulletsController : MonoBehaviour
 
         if (player != null && Time.time >= nextFireTime)
         {
-            Shoot(player.transform.position);
-            nextFireTime = Time.time + fireRate;
+            PlayerController playerController = player.GetComponent<PlayerController>();
+
+            if (playerController != null && playerController.projectileTarget != null)
+            {
+                Shoot(playerController.projectileTarget.position);
+                nextFireTime = Time.time + fireRate;
+            }
         }
     }
 
