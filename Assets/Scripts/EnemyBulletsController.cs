@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class EnemyBulletsController : MonoBehaviour
 {
+    [Header("EnemyBulletConfiguración")]
     public GameObject projectilePrefab;
     public Transform firePoint;
     public float fireRate = 1.5f;
     public float detectionRange = 5f;
     public LayerMask playerLayer;
     public float projectileSpeed = 5f;
-
     private float nextFireTime;
+
+    [Header("EnemyBulletHealth")]
+    public LayerMask weaponLayer;
+    public int health = 3;
 
     void Update()
     {
@@ -42,6 +46,29 @@ public class EnemyBulletsController : MonoBehaviour
             projectileScript.SetShooter(this);
             projectileScript.SetTarget(targetPosition, projectileSpeed);
         }
+    }
+    public void TakeDamage(int amount)
+    {
+        health -= amount;
+        Debug.Log("Enemigo recibió " + amount + " de daño. Vida restante: " + health);
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (((1 << other.gameObject.layer) & weaponLayer) != 0)
+        {
+            TakeDamage(1);
+            Debug.Log("El enemigo ha recibido daño");
+        }
+    }
+    void Die()
+    {
+        Debug.Log("El enemigo ha sido destruido.");
+        Destroy(gameObject);
     }
     void OnDrawGizmosSelected()
     {

@@ -136,4 +136,4 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
-  destroyBullet: 2.5
+  destroyBullet: 1

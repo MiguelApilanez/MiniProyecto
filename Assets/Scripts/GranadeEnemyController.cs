@@ -4,18 +4,24 @@ using UnityEngine;
 
 public class GranadeEnemyController : MonoBehaviour
 {
+    [Header("GrenadeConfiguración")]
     public float patrolSpeed = 2f;
     public float chaseSpeed = 8f;
     public float detectionRange = 5f;
     public float explosionRange = 1.5f;
-    public int explosionDamage = 50;
     public LayerMask playerLayer;
-    public Transform[] patrolPoints;
     public int dañoJugador = 4;
 
+    [Header("GrenadeHealth")]
+    public int grenadeHealth = 1;
+    public LayerMask weaponLayer;
+
+    [Header("GrenadePatrol")]
+    public Transform[] patrolPoints;
     private int currentPatrolIndex = 0;
     private PlayerController playerController;
     private bool chasing = false;
+
     void Update()
     {
         DetectPlayer();
@@ -68,6 +74,29 @@ public class GranadeEnemyController : MonoBehaviour
         }
 
         Debug.Log("El jugador ha perdido 2 corazones por la explosión del enemigo.");
+        Destroy(gameObject);
+    }
+    public void TakeDamage(int amount)
+    {
+        grenadeHealth -= amount;
+        //Debug.Log("Enemigo recibió " + amount + " de daño. Vida restante: " + grenadeHealth);
+
+        if (grenadeHealth <= 0)
+        {
+            Die();
+        }
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (((1 << other.gameObject.layer) & weaponLayer) != 0)
+        {
+            TakeDamage(1);
+            //Debug.Log("El enemigo ha recibido daño");
+        }
+    }
+    void Die()
+    {
+        //Debug.Log("El enemigo ha sido destruido.");
         Destroy(gameObject);
     }
     void OnDrawGizmosSelected()

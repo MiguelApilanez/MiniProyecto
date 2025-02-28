@@ -54,9 +54,19 @@ public class PlayerController : MonoBehaviour
 
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
+        if (isGrounded)
+        {
+            anim.SetBool("isJumping", false);
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            anim.SetBool("isJumping", true);
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            anim.SetTrigger("Attack");
         }
     }
     public void TakeDamage(int damage)
@@ -92,7 +102,7 @@ public class PlayerController : MonoBehaviour
         isDeath = true;
         Debug.Log("El jugador ha muerto. Cargando escena en 2 segundos...");
         enabled = false;
-        StartCoroutine(DieAfterDelay(2f));
+        StartCoroutine(DieAfterDelay(0f));
     }
 
     IEnumerator DieAfterDelay(float delay)

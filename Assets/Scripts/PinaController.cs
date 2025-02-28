@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements.Experimental;
-using UnityEngine.SceneManagement;
 
 public class PinaController : MonoBehaviour
 {
+    [Header("EnemyFallConfiguración")]
     public float detectionRange = 3f;
     public float fallSpeed = 10f;
     public float returnSpeed = 3f;
+    public float fallDelay = 0.5f;
     public Transform startPosition;
     public LayerMask playerLayer;
     public LayerMask groundLayer;
@@ -16,17 +16,20 @@ public class PinaController : MonoBehaviour
     private bool isFalling = false;
     private bool isReturning = false;
     private Rigidbody2D rb;
+    private Animator animPina;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animPina = GetComponent<Animator>();
+
         rb.isKinematic = true;
+        animPina.SetBool("isFalling", false);
     }
     void Update()
     {
         DetectPlayer();
     }
-
     void DetectPlayer()
     {
         Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, detectionRange, playerLayer);
@@ -41,13 +44,18 @@ public class PinaController : MonoBehaviour
             }
         }
     }
+    IEnumerator FallDelayCoroutine()
+    {
+        yield return new WaitForSeconds(fallDelay);
+        StartFall();
+    }
     void StartFall()
     {
         isFalling = true;
         rb.isKinematic = false;
         rb.velocity = new Vector2(0, -fallSpeed);
+        animPina.SetBool("isFalling", true);
     }
-
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (((1 << collision.gameObject.layer) & playerLayer) != 0)
@@ -59,7 +67,6 @@ public class PinaController : MonoBehaviour
             }
         }
     }
-
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (((1 << collision.gameObject.layer) & groundLayer) != 0)
@@ -71,6 +78,7 @@ public class PinaController : MonoBehaviour
     }
     void ReturnToStart()
     {
+        animPina.SetBool("isFalling", false);
         isReturning = true;
         StartCoroutine(ReturnCoroutine());
     }
@@ -83,6 +91,7 @@ public class PinaController : MonoBehaviour
         }
         isReturning = false;
         isFalling = false;
+        //animPina.SetBool("isFalling", false);
     }
     void OnDrawGizmos()
     {
