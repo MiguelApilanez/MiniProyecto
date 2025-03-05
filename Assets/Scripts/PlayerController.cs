@@ -25,12 +25,20 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer;
     private bool isGrounded;
 
+    [Header("SoundsConfiguración")]
+    public AudioClip healSound;
+    public AudioClip jumpSound;
+    public AudioClip walkSound;
+    public AudioClip attackSound;
+    AudioSource audioSourcePlayer;
+
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        audioSourcePlayer = GetComponent<AudioSource>();
     }
     void Update()
     {
@@ -62,11 +70,14 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            audioSourcePlayer.PlayOneShot(jumpSound);
             anim.SetBool("isJumping", true);
+
         }
         if (Input.GetMouseButtonDown(0))
         {
             anim.SetTrigger("Attack");
+            audioSourcePlayer.PlayOneShot(attackSound);
         }
     }
     public void TakeDamage(int damage)
@@ -80,15 +91,16 @@ public class PlayerController : MonoBehaviour
         }
         UpdateLifeBar();
     }
-
-    public void Heal(int amount)
+    public bool AddHealth(int amount)
     {
-        currentHealth += amount;
-        if (currentHealth > maxHealth)
+        if (currentHealth < maxHealth)
         {
-            currentHealth = maxHealth;
+            audioSourcePlayer.PlayOneShot(healSound);
+            currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+            UpdateLifeBar();
+            return true;
         }
-        UpdateLifeBar();
+        return false;
     }
     void UpdateLifeBar()
     {
