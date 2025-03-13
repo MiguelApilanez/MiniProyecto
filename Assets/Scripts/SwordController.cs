@@ -8,6 +8,7 @@ public class SwordController : MonoBehaviour
     public float attackRange = 1.5f;
     public float attackRate = 0.5f;
     public LayerMask enemyLayer;
+    public LayerMask bulletLayer;
 
     private float nextAttackTime = 0f;
     Animator animator;
@@ -38,6 +39,13 @@ public class SwordController : MonoBehaviour
                 enemyController.TakeDamage(damage);
                 Debug.Log("Golpeaste al enemigo");
             }
+        }
+
+        Collider2D[] hitBullets = Physics2D.OverlapCircleAll(transform.position, attackRange, bulletLayer);
+        foreach (Collider2D bullet in hitBullets)
+        {
+            Destroy(bullet.gameObject);
+            Debug.Log("Destruiste un proyectil enemigo");
         }
     }
 }

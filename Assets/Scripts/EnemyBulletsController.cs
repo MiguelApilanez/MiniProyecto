@@ -17,6 +17,16 @@ public class EnemyBulletsController : MonoBehaviour
     public LayerMask weaponLayer;
     public int health = 3;
 
+    private Animator anim;
+    private bool isAttacking = false;
+
+    private void Start()
+    {
+        anim = GetComponent<Animator>();
+
+        anim.SetBool("Attack", false);
+    }
+
     void Update()
     {
         DetectAndShoot();
@@ -35,12 +45,17 @@ public class EnemyBulletsController : MonoBehaviour
                 nextFireTime = Time.time + fireRate;
             }
         }
+        else if (player == null)
+        {
+            anim.SetBool("Attack", false);
+        }
     }
 
     void Shoot(Vector2 targetPosition)
     {
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
         ProyectilController projectileScript = projectile.GetComponent<ProyectilController>();
+        anim.SetBool("Attack", true);
         if (projectileScript != null)
         {
             projectileScript.SetShooter(this);
