@@ -11,6 +11,7 @@ public class GranadeEnemyController : MonoBehaviour
     public float explosionRange = 1.5f;
     public LayerMask playerLayer;
     public int dañoJugador = 4;
+    public float explosionDelay = 0.7f;
 
     [Header("GrenadeHealth")]
     public int grenadeHealth = 1;
@@ -21,7 +22,16 @@ public class GranadeEnemyController : MonoBehaviour
     private int currentPatrolIndex = 0;
     private PlayerController playerController;
     private bool chasing = false;
+    private bool isExploding = false;
+    Animator anim;
+    private SpriteRenderer spriteRenderer;
 
+
+    private void Start()
+    {
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
     void Update()
     {
         DetectPlayer();
@@ -50,16 +60,27 @@ public class GranadeEnemyController : MonoBehaviour
         Transform targetPoint = patrolPoints[currentPatrolIndex];
         transform.position = Vector2.MoveTowards(transform.position, targetPoint.position, patrolSpeed * Time.deltaTime);
 
+        FlipSprite(targetPoint.position.x);
+
         if (Vector2.Distance(transform.position, targetPoint.position) < 0.2f)
         {
             currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
         }
+    }
+    void FlipSprite(float targetX)
+    {
+        if (targetX < transform.position.x)
+            spriteRenderer.flipX = true;
+        else
+            spriteRenderer.flipX = false;
     }
     void ChasePlayer()
     {
         if (playerController == null || playerController.projectileTarget == null) return;
 
         transform.position = Vector2.MoveTowards(transform.position, playerController.projectileTarget.position, chaseSpeed * Time.deltaTime);
+
+        FlipSprite(playerController.projectileTarget.position.x);
 
         if (Vector2.Distance(transform.position, playerController.projectileTarget.position) <= explosionRange)
         {
@@ -68,6 +89,10 @@ public class GranadeEnemyController : MonoBehaviour
     }
     void Explode()
     {
+        isExploding = true;
+
+        anim.SetTrigger("Explode");
+
         if (playerController != null)
         {
             playerController.TakeDamage(dañoJugador);
