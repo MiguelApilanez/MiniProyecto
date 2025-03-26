@@ -82,6 +82,7 @@ public class PlayerController : MonoBehaviour
     }
     public void TakeDamage(int damage)
     {
+        anim.SetTrigger("Hit");
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
@@ -111,10 +112,11 @@ public class PlayerController : MonoBehaviour
     }
     void Die()
     {
+        anim.SetTrigger("Death");
         isDeath = true;
         Debug.Log("El jugador ha muerto. Cargando escena en 2 segundos...");
         enabled = false;
-        StartCoroutine(DieAfterDelay(0f));
+        StartCoroutine(DieAfterDelay(1.2f));
     }
 
     IEnumerator DieAfterDelay(float delay)

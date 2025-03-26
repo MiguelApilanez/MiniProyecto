@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -78,11 +79,11 @@ public class GranadeEnemyController : MonoBehaviour
     {
         if (playerController == null || playerController.projectileTarget == null) return;
 
-        transform.position = Vector2.MoveTowards(transform.position, playerController.projectileTarget.position, chaseSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, playerController.transform.position, chaseSpeed * Time.deltaTime);
 
         FlipSprite(playerController.projectileTarget.position.x);
 
-        if (Vector2.Distance(transform.position, playerController.projectileTarget.position) <= explosionRange)
+        if (Vector2.Distance(transform.position, playerController.projectileTarget.position) <= explosionRange && !isExploding)
         {
             Explode();
         }
@@ -93,14 +94,29 @@ public class GranadeEnemyController : MonoBehaviour
 
         anim.SetTrigger("Explode");
 
+        StartCoroutine(WaitAnimation());
+
         if (playerController != null)
         {
             playerController.TakeDamage(dañoJugador);
         }
 
         Debug.Log("El jugador ha perdido 2 corazones por la explosión del enemigo.");
-        Destroy(gameObject);
+
     }
+
+    IEnumerator WaitAnimation()
+    {
+        yield return new WaitForSeconds(anim.GetCurrentAnimatorClipInfo(0).Length);
+        Destroy(gameObject);
+
+    }
+
+    private void WaitForSeconds(float v)
+    {
+        throw new NotImplementedException();
+    }
+
     public void TakeDamage(int amount)
     {
         grenadeHealth -= amount;
