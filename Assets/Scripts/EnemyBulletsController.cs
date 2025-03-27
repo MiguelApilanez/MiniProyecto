@@ -12,6 +12,10 @@ public class EnemyBulletsController : MonoBehaviour
     public LayerMask playerLayer;
     public float projectileSpeed = 5f;
     private float nextFireTime;
+    private Transform playerTransform;
+
+    [Header("Drop de Moneda")]
+    public GameObject coinPrefab;
 
     [Header("EnemyBulletHealth")]
     public LayerMask weaponLayer;
@@ -30,27 +34,43 @@ public class EnemyBulletsController : MonoBehaviour
     void Update()
     {
         DetectAndShoot();
+        LookAtPlayer();
     }
     void DetectAndShoot()
     {
         Collider2D player = Physics2D.OverlapCircle(transform.position, detectionRange, playerLayer);
 
-        if (player != null && Time.time >= nextFireTime)
+        if (player != null)
         {
-            PlayerController playerController = player.GetComponent<PlayerController>();
+            playerTransform = player.transform;
 
-            if (playerController != null && playerController.projectileTarget != null)
+            if (Time.time >= nextFireTime)
             {
-                Shoot(playerController.projectileTarget.position);
-                nextFireTime = Time.time + fireRate;
+                PlayerController playerController = player.GetComponent<PlayerController>();
+
+                if (playerController != null && playerController.projectileTarget != null)
+                {
+                    Shoot(playerController.projectileTarget.position);
+                    nextFireTime = Time.time + fireRate;
+                }
             }
         }
-        else if (player == null)
+        else
         {
             anim.SetBool("Attack", false);
         }
     }
-
+    void LookAtPlayer()
+    {
+        if (playerTransform != null)
+        {
+            Vector3 direction = playerTransform.position - transform.position;
+            if (direction.x > 0)
+                transform.localScale = new Vector3(-1, 1, 1);  // Mirar a la derecha
+            else
+                transform.localScale = new Vector3(1, 1, 1); // Mirar a la izquierda
+        }
+    }
     void Shoot(Vector2 targetPosition)
     {
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
@@ -83,6 +103,13 @@ public class EnemyBulletsController : MonoBehaviour
     void Die()
     {
         Debug.Log("El enemigo ha sido destruido.");
+
+        if (coinPrefab != null)
+        {
+            Vector3 spawnPosition = transform.position + new Vector3(0, 2f, 0);
+            Instantiate(coinPrefab, spawnPosition, Quaternion.identity);
+        }
+
         Destroy(gameObject);
     }
     void OnDrawGizmosSelected()

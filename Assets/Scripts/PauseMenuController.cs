@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenuController : MonoBehaviour
 {
+    private AudioSource sonido;
+    public AudioClip clickAudio;
+    //public AudioClip switchAudio;
+
     public GameObject pausePanel;
     public static bool isPaused = false;
 
@@ -12,6 +16,7 @@ public class PauseMenuController : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1;
+        sonido = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -33,13 +38,19 @@ public class PauseMenuController : MonoBehaviour
             }
         }
     }
-    public void StartButton()
+    public void ClickAudioOn()
     {
-        SceneManager.LoadScene("Game");
+        sonido.PlayOneShot(clickAudio);
     }
     public void QuitButton()
     {
         Application.Quit();
+    }
+    public void QuitPause()
+    {
+        isPaused = false;
+        pausePanel.SetActive(false);
+        Time.timeScale = 1;
     }
     public void SetVolume(float value) //funcion para que funcione el slider del sonido; cuando se asinga en unity hay que poner el set volume de arriba
     {

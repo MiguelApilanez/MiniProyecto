@@ -14,6 +14,10 @@ public class PlayerController : MonoBehaviour
     Animator anim;
     public Transform projectileTarget;
 
+    [Header("CoinConfiguración")]
+    int points = 0;
+    public TextMeshProUGUI pointsText;
+
     [Header("PlayerHealth")]
     public int maxHealth = 4;
     public int currentHealth;
@@ -30,6 +34,7 @@ public class PlayerController : MonoBehaviour
     public AudioClip jumpSound;
     public AudioClip walkSound;
     public AudioClip attackSound;
+    public AudioClip coinSound;
     AudioSource audioSourcePlayer;
 
 
@@ -80,6 +85,14 @@ public class PlayerController : MonoBehaviour
             audioSourcePlayer.PlayOneShot(attackSound);
         }
     }
+    public void AddPoints(int coin)
+    {
+        points += coin;
+
+        audioSourcePlayer.PlayOneShot(coinSound);
+        pointsText.text = points.ToString();
+        CheckWinCondition();
+    }
     public void TakeDamage(int damage)
     {
         anim.SetTrigger("Hit");
@@ -108,6 +121,13 @@ public class PlayerController : MonoBehaviour
         for (int i = 0; i < lifeBar.Length; i++)
         {
             lifeBar[i].SetActive(i < currentHealth);
+        }
+    }
+    private void CheckWinCondition()
+    {
+        if (points == 5)
+        {
+            SceneManager.LoadScene("WinScene");
         }
     }
     void Die()
