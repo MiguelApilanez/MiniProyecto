@@ -16,7 +16,12 @@ public class MenuController : MonoBehaviour
     }
     public void StartButton()
     {
-        StartCoroutine(ChangeSceneAfterDelay(0.6f));
+        StartCoroutine(ChangeSceneAfterDelay(0.5f));
+        Debug.Log("Empieza el juego");
+    }
+    public void MenuButton()
+    {
+        StartCoroutine(MenuSceneAfterDelay(0.5f));
         Debug.Log("Empieza el juego");
     }
     public void ExitButton()
@@ -32,5 +37,10 @@ public class MenuController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         SceneManager.LoadScene("GameScene");
+    }
+    IEnumerator MenuSceneAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene("MenuStart");
     }
 }

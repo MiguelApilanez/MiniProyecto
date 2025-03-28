@@ -13,6 +13,10 @@ public class PinaController : MonoBehaviour
     public LayerMask playerLayer;
     public LayerMask groundLayer;
 
+    [Header("Sonido de Golpe")]
+    public AudioSource audioSource;
+    public AudioClip hitSound;
+
     private bool isFalling = false;
     private bool isReturning = false;
     private Rigidbody2D rb;
@@ -65,6 +69,8 @@ public class PinaController : MonoBehaviour
             {
                 playerController.TakeDamage(10);
             }
+
+            PlayHitSound();
         }
     }
     void OnCollisionEnter2D(Collision2D collision)
@@ -74,6 +80,15 @@ public class PinaController : MonoBehaviour
             rb.velocity = Vector2.zero;
             rb.isKinematic = true;
             Invoke(nameof(ReturnToStart), 1f);
+
+            PlayHitSound();
+        }
+    }
+    void PlayHitSound()
+    {
+        if (audioSource != null && hitSound != null)
+        {
+            audioSource.PlayOneShot(hitSound);
         }
     }
     void ReturnToStart()

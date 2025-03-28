@@ -27,11 +27,15 @@ public class GranadeEnemyController : MonoBehaviour
     Animator anim;
     private SpriteRenderer spriteRenderer;
 
+    [Header("Audio")]
+    public AudioClip explosionSound;
+    private AudioSource audioSource;
 
     private void Start()
     {
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
     void Update()
     {
@@ -94,6 +98,8 @@ public class GranadeEnemyController : MonoBehaviour
 
         anim.SetTrigger("Explode");
 
+        StartCoroutine(PlayExplosionSound());
+
         StartCoroutine(WaitAnimation());
 
         if (playerController != null)
@@ -102,9 +108,16 @@ public class GranadeEnemyController : MonoBehaviour
         }
 
         Debug.Log("El jugador ha perdido 2 corazones por la explosión del enemigo.");
-
     }
+    IEnumerator PlayExplosionSound()
+    {
+        yield return new WaitForSeconds(0.3f);
 
+        if (audioSource != null && explosionSound != null)
+        {
+            audioSource.PlayOneShot(explosionSound);
+        }
+    }
     IEnumerator WaitAnimation()
     {
         yield return new WaitForSeconds(anim.GetCurrentAnimatorClipInfo(0).Length);

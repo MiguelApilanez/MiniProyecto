@@ -142,6 +142,6 @@ public class PlayerController : MonoBehaviour
     IEnumerator DieAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        SceneManager.LoadScene("GameOverScene");
+        SceneManager.LoadScene("GameScene");
     }
 }

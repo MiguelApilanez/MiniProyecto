@@ -7,10 +7,10 @@ public class EnemyBulletsController : MonoBehaviour
     [Header("EnemyBulletConfiguración")]
     public GameObject projectilePrefab;
     public Transform firePoint;
-    public float fireRate = 1.5f;
-    public float detectionRange = 5f;
+    public float fireRate = 1.05f;
+    public float detectionRange = 8f;
     public LayerMask playerLayer;
-    public float projectileSpeed = 5f;
+    public float projectileSpeed = 5.5f;
     private float nextFireTime;
     private Transform playerTransform;
 
@@ -20,6 +20,10 @@ public class EnemyBulletsController : MonoBehaviour
     [Header("EnemyBulletHealth")]
     public LayerMask weaponLayer;
     public int health = 3;
+
+    [Header("Sonido de Disparo")]
+    public AudioSource audioSource;
+    public AudioClip shootSound;
 
     private Animator anim;
     private bool isAttacking = false;
@@ -66,9 +70,9 @@ public class EnemyBulletsController : MonoBehaviour
         {
             Vector3 direction = playerTransform.position - transform.position;
             if (direction.x > 0)
-                transform.localScale = new Vector3(-1, 1, 1);  // Mirar a la derecha
+                transform.localScale = new Vector3(-1, 1, 1);
             else
-                transform.localScale = new Vector3(1, 1, 1); // Mirar a la izquierda
+                transform.localScale = new Vector3(1, 1, 1);
         }
     }
     void Shoot(Vector2 targetPosition)
@@ -76,6 +80,12 @@ public class EnemyBulletsController : MonoBehaviour
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
         ProyectilController projectileScript = projectile.GetComponent<ProyectilController>();
         anim.SetBool("Attack", true);
+
+        if (audioSource != null && shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
+
         if (projectileScript != null)
         {
             projectileScript.SetShooter(this);
